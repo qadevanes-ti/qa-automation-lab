@@ -15,7 +15,11 @@ export class InventoryPage {
   readonly badge: Locator;
 
   item(name: string) {
-    return this.items.filter({ has: this.page.getByTestId('inventory-item-name').filter({ hasText: new RegExp(`^${name}$`) }) });
+    return this.items.filter({
+      has: this.page
+        .getByTestId('inventory-item-name')
+        .filter({ hasText: new RegExp(`^${name}$`) }),
+    });
   }
 
   async addProduct(name: string) {
@@ -26,7 +30,9 @@ export class InventoryPage {
     await this.page.getByTestId('product-sort-container').selectOption(order);
   }
 
-  async openCart() { await this.page.getByTestId('shopping-cart-link').click(); }
+  async openCart() {
+    await this.page.getByTestId('shopping-cart-link').click();
+  }
 
   async logout() {
     await this.page.getByRole('button', { name: 'Open Menu' }).click();

@@ -11,9 +11,13 @@ export class CartPage {
   readonly prices: Locator;
 
   async removeProduct(name: string) {
-    await this.items.filter({ has: this.page.getByText(name, { exact: true }) })
-      .getByRole('button', { name: 'Remove', exact: true }).click();
+    await this.items
+      .filter({ has: this.page.getByText(name, { exact: true }) })
+      .getByRole('button', { name: 'Remove', exact: true })
+      .click();
   }
 
-  async checkout() { await this.page.getByTestId('checkout').click(); }
+  async checkout() {
+    await this.page.getByTestId('checkout').click();
+  }
 }

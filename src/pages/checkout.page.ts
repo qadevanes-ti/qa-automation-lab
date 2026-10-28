@@ -24,7 +24,13 @@ export class CheckoutPage {
     await this.page.getByTestId('postalCode').fill(customer.postalCode);
   }
 
-  async continue() { await this.page.getByTestId('continue').click(); }
-  async cancel() { await this.page.getByTestId('cancel').click(); }
-  async finish() { await this.page.getByTestId('finish').click(); }
+  async continue() {
+    await this.page.getByTestId('continue').click();
+  }
+  async cancel() {
+    await this.page.getByTestId('cancel').click();
+  }
+  async finish() {
+    await this.page.getByTestId('finish').click();
+  }
 }

@@ -8,24 +8,28 @@ test.describe('Checkout', () => {
     await cart.checkout();
   });
 
-  test('CHK-01 | Conclui uma compra com valores corretos', { tag: '@smoke' }, async ({ checkout, page }) => {
-    await test.step('Quando preencho os dados de entrega', async () => {
-      await checkout.fillCustomer(customer);
-      await checkout.continue();
-    });
-    await test.step('Então reviso o produto e os valores', async () => {
-      await expect(page).toHaveURL(/\/checkout-step-two\.html$/);
-      await expect(checkout.itemNames).toHaveText([backpack.name]);
-      await expect(checkout.subtotal).toHaveText('Item total: $29.99');
-      await expect(checkout.tax).toHaveText('Tax: $2.40');
-      await expect(checkout.total).toHaveText('Total: $32.39');
-    });
-    await test.step('Quando confirmo, recebo a conclusão do pedido', async () => {
-      await checkout.finish();
-      await expect(page).toHaveURL(/\/checkout-complete\.html$/);
-      await expect(checkout.confirmation).toHaveText('Thank you for your order!');
-    });
-  });
+  test(
+    'CHK-01 | Conclui uma compra com valores corretos',
+    { tag: '@smoke' },
+    async ({ checkout, page }) => {
+      await test.step('Quando preencho os dados de entrega', async () => {
+        await checkout.fillCustomer(customer);
+        await checkout.continue();
+      });
+      await test.step('Então reviso o produto e os valores', async () => {
+        await expect(page).toHaveURL(/\/checkout-step-two\.html$/);
+        await expect(checkout.itemNames).toHaveText([backpack.name]);
+        await expect(checkout.subtotal).toHaveText('Item total: $29.99');
+        await expect(checkout.tax).toHaveText('Tax: $2.40');
+        await expect(checkout.total).toHaveText('Total: $32.39');
+      });
+      await test.step('Quando confirmo, recebo a conclusão do pedido', async () => {
+        await checkout.finish();
+        await expect(page).toHaveURL(/\/checkout-complete\.html$/);
+        await expect(checkout.confirmation).toHaveText('Thank you for your order!');
+      });
+    },
+  );
 
   for (const field of [
     { id: 'CHK-02', key: 'firstName', message: 'Error: First Name is required' },
@@ -48,7 +52,12 @@ test.describe('Checkout', () => {
     await expect(cart.prices).toHaveText([backpack.price]);
   });
 
-  test('CHK-06 | Cancela revisão sem perder o produto', async ({ checkout, inventory, cart, page }) => {
+  test('CHK-06 | Cancela revisão sem perder o produto', async ({
+    checkout,
+    inventory,
+    cart,
+    page,
+  }) => {
     await checkout.fillCustomer(customer);
     await checkout.continue();
     await expect(checkout.total).toHaveText('Total: $32.39');
@@ -59,7 +68,12 @@ test.describe('Checkout', () => {
     await expect(cart.names).toHaveText([backpack.name]);
   });
 
-  test('CHK-07 | Conclui compra de dois produtos com soma correta', async ({ checkout, inventory, cart, page }) => {
+  test('CHK-07 | Conclui compra de dois produtos com soma correta', async ({
+    checkout,
+    inventory,
+    cart,
+    page,
+  }) => {
     await checkout.cancel();
     await page.goto('/inventory.html');
     await inventory.addProduct(bikeLight.name);
@@ -75,5 +89,4 @@ test.describe('Checkout', () => {
     await expect(checkout.confirmation).toHaveText('Thank you for your order!');
     await expect(inventory.badge).toHaveCount(0);
   });
-
 });

@@ -15,10 +15,18 @@ type Fixtures = {
 
 // Cada teste recebe objetos ligados à sua própria page/context, sem sessão global.
 export const test = base.extend<Fixtures>({
-  login: async ({ page }, use) => { await use(new LoginPage(page)); },
-  inventory: async ({ page }, use) => { await use(new InventoryPage(page)); },
-  cart: async ({ page }, use) => { await use(new CartPage(page)); },
-  checkout: async ({ page }, use) => { await use(new CheckoutPage(page)); },
+  login: async ({ page }, use) => {
+    await use(new LoginPage(page));
+  },
+  inventory: async ({ page }, use) => {
+    await use(new InventoryPage(page));
+  },
+  cart: async ({ page }, use) => {
+    await use(new CartPage(page));
+  },
+  checkout: async ({ page }, use) => {
+    await use(new CheckoutPage(page));
+  },
   authenticatedInventory: async ({ login, inventory, page }, use) => {
     await login.open();
     await login.login(users.standard);

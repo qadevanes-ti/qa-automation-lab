@@ -10,7 +10,9 @@ export class LoginPage {
   readonly password: Locator;
   readonly error: Locator;
 
-  async open() { await this.page.goto('/'); }
+  async open() {
+    await this.page.goto('/');
+  }
 
   async login(user: { username: string; password: string }) {
     await this.username.fill(user.username);

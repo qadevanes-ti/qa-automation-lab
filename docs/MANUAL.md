@@ -1,4 +1,5 @@
 # QA Automation Lab
+
 ## Manual de arquitetura e aprendizado
 
 Playwright + TypeScript | Automação Web com SauceDemo | Edição 28/10/2026
@@ -27,7 +28,7 @@ O fluxo de leitura é teste, fixture, página e navegador. As expectativas de ne
 
 ## 3. Preparando a máquina
 
-Instale Node.js 22 ou superior e abra o terminal na pasta que contém package.json. O arquivo .nvmrc indica a versão 22 para quem utiliza nvm. Execute os comandos abaixo na ordem:
+Instale Node.js 22.13 ou superior e abra o terminal na pasta que contém package.json. O arquivo .nvmrc indica a versão 22 para quem utiliza nvm. Execute os comandos abaixo na ordem:
 
 ```bash
 npm ci
@@ -96,7 +97,7 @@ src/fixtures/test.fixture.ts estende o test do Playwright com novos objetos. O t
 ```typescript
 login: async ({ page }, use) => {
   await use(new LoginPage(page));
-}
+};
 ```
 
 A fixture authenticatedInventory depende de login, inventory e page. Ela abre a loja, entra com usuário válido, confirma a navegação e entrega o catálogo. Só é executada quando o teste a solicita ou depende dela.
@@ -144,7 +145,7 @@ Se uma falha ocorrer antes de criar a página, não haverá screenshot ou vídeo
 
 ## 12. Pipeline e GitHub
 
-.github/workflows/playwright.yml executa em pushes e pull requests para main/master e aceita disparo manual. Instala dependências com npm ci, verifica tipos, instala navegadores e executa npm test. O upload preserva relatório e resultados mesmo quando há falha de teste, exceto em cancelamento.
+.github/workflows/playwright.yml executa em pushes e pull requests para main/master e aceita disparo manual. Instala dependências com npm ci, verifica lint, formatação e tipos, instala navegadores e executa npm test. O upload preserva relatório e resultados mesmo quando há falha de teste, exceto em cancelamento.
 
 As permissões são limitadas à leitura do repositório. Os artefatos expiram após 14 dias. O workflow está preparado no código; publicar no GitHub e verificar uma execução real são passos separados. As cotas e cobranças de infraestrutura dependem do plano da conta.
 
@@ -160,7 +161,7 @@ Se precisar de uma ação nova de negócio, crie um método na página correspon
 
 ### Comandos para uma rotina profissional
 
-npm run check verifica os tipos e executa Chromium. npm run test:regression executa os três navegadores. Os scripts test:login, test:catalog, test:cart e test:checkout permitem trabalhar por domínio. O guia docs/COMMANDS.md reúne exemplos de filtros e investigação.
+npm run check verifica lint, formatação e tipos e executa Chromium. npm run quality executa somente as verificações estáticas. npm run format aplica a formatação definida pelo Prettier. O ESLint também detecta promises esquecidas sem await. npm run test:regression executa os três navegadores. Os scripts test:login, test:catalog, test:cart e test:checkout permitem trabalhar por domínio. O guia docs/COMMANDS.md reúne exemplos de filtros e investigação.
 
 Para ver o site sendo controlado ao vivo, execute npm run test:demo. Esse comando abre Chromium e insere 1,2 segundo entre ações na compra CHK-01. A janela fecha ao terminar. npm run test:headed abre o navegador em velocidade normal. npm run test:ui mostra o painel e snapshots das ações selecionadas. npm run test:debug permite avançar manualmente no Inspector.
 

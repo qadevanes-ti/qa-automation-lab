@@ -6,6 +6,8 @@
 
 Portfólio de engenharia de qualidade: estratégia de testes, arquitetura de automação e integração contínua para e-commerce.
 
+[![QA Automation Lab](https://github.com/qadevanes-ti/qa-automation-lab/actions/workflows/playwright.yml/badge.svg?branch=main)](https://github.com/qadevanes-ti/qa-automation-lab/actions/workflows/playwright.yml)
+
 ![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=for-the-badge)
 ![Arquitetura](https://img.shields.io/badge/Arquitetura-Page_Objects-172554?style=for-the-badge)
@@ -33,9 +35,15 @@ Validar a jornada de compra de um e-commerce com uma suíte E2E organizada por d
 
 Execução local em **28/10/2026**: **63 testes aprovados**, correspondentes a 21 cenários em Chromium, Firefox e WebKit. A checagem estática de tipos também foi aprovada. Esse resultado registra a validação local; a pipeline deve ser acompanhada na aba Actions após a publicação.
 
+## Demonstração
+
+![Jornada real de login, carrinho e checkout no SauceDemo](docs/assets/checkout-demo.gif)
+
+Captura de uma execução real no Chromium. Para acompanhar ao vivo na sua máquina, use `npm run test:demo`. A animação apresenta o fluxo; as assertivas da suíte são responsáveis pela validação.
+
 ## Comece aqui
 
-Pré-requisitos: Node.js 22 ou superior e npm. Execute na pasta que contém `package.json`:
+Pré-requisitos: Node.js 22.13 ou superior e npm. Execute na pasta que contém `package.json`:
 
 ```bash
 npm ci
@@ -74,29 +82,33 @@ playwright.config.ts  Navegadores, relatórios, tentativas e evidências
 
 ## Cobertura
 
-| Domínio | Cenários | Principais verificações |
-| --- | ---: | --- |
-| Login | 6 | Sucesso, inválido, bloqueado, obrigatoriedade, logout |
-| Catálogo | 4 | Nome e preço em ambas as direções |
-| Carrinho | 4 | Adição, identidade, preço e remoção |
-| Checkout | 7 | Compra simples e múltipla, totais, cancelamento e campos obrigatórios |
+| Domínio  | Cenários | Principais verificações                                               |
+| -------- | -------: | --------------------------------------------------------------------- |
+| Login    |        6 | Sucesso, inválido, bloqueado, obrigatoriedade, logout                 |
+| Catálogo |        4 | Nome e preço em ambas as direções                                     |
+| Carrinho |        4 | Adição, identidade, preço e remoção                                   |
+| Checkout |        7 | Compra simples e múltipla, totais, cancelamento e campos obrigatórios |
 
 São 21 cenários, configurados em três navegadores (63 execuções). A seleção `@smoke` cobre login, adição ao carrinho e compra completa.
 
 ## Comandos
 
-| Comando | Finalidade |
-| --- | --- |
-| `npm test` | Executar Chromium, Firefox e WebKit |
-| `npm run test:chromium` | Executar os 21 cenários no Chromium |
-| `npm run test:smoke` | Executar três cenários essenciais |
-| `npm run test:demo` | Ver a compra ao vivo no navegador, com ações lentas |
-| `npm run test:ui` | Explorar testes na interface do Playwright |
-| `npm run test:debug` | Depurar com Inspector |
-| `npm run test:list` | Listar cenários sem abrir navegador |
-| `npm run typecheck` | Verificar os tipos TypeScript |
-| `npm run report` | Abrir relatório HTML |
-| `npm run docs:pdf` | Gerar PDF a partir do manual |
+| Comando                 | Finalidade                                          |
+| ----------------------- | --------------------------------------------------- |
+| `npm test`              | Executar Chromium, Firefox e WebKit                 |
+| `npm run test:chromium` | Executar os 21 cenários no Chromium                 |
+| `npm run test:smoke`    | Executar três cenários essenciais                   |
+| `npm run test:demo`     | Ver a compra ao vivo no navegador, com ações lentas |
+| `npm run test:ui`       | Explorar testes na interface do Playwright          |
+| `npm run test:debug`    | Depurar com Inspector                               |
+| `npm run test:list`     | Listar cenários sem abrir navegador                 |
+| `npm run lint`          | Verificar problemas de código e promises sem await  |
+| `npm run format:check`  | Verificar a formatação                              |
+| `npm run format`        | Formatar os arquivos                                |
+| `npm run quality`       | Executar lint, formatação e tipos                   |
+| `npm run typecheck`     | Verificar os tipos TypeScript                       |
+| `npm run report`        | Abrir relatório HTML                                |
+| `npm run docs:pdf`      | Gerar PDF a partir do manual                        |
 
 Exemplo de filtro: `npx playwright test --project=chromium --grep AUTH-03`.
 Para outro ambiente compatível com o SauceDemo, use `BASE_URL=https://seu-ambiente npm run test:chromium` (bash/zsh). Arquivos `.env` não são carregados automaticamente.
@@ -104,7 +116,7 @@ Para outro ambiente compatível com o SauceDemo, use `BASE_URL=https://seu-ambie
 ## Rotina de trabalho
 
 ```bash
-# Antes de entregar uma alteração: tipos + suíte Chromium
+# Antes de entregar uma alteração: lint, formatação, tipos e suíte Chromium
 npm run check
 
 # Executar por funcionalidade
@@ -130,7 +142,7 @@ Consulte o [guia de comandos](docs/COMMANDS.md) para instalação, filtros, depu
 
 ## Qualidade e CI
 
-A pipeline instala dependências pelo lockfile, verifica tipos e executa os três navegadores em Node 22. Guarda HTML, JUnit e evidências por 14 dias. Localmente, falhas retêm screenshot, vídeo e trace; esses arquivos ficam fora do Git. Duas novas tentativas são permitidas no CI; resultados flaky precisam de investigação.
+A pipeline instala dependências pelo lockfile, verifica lint, formatação e tipos e executa os três navegadores em Node 22. Guarda HTML, JUnit e evidências por 14 dias. Localmente, falhas retêm screenshot, vídeo e trace; esses arquivos ficam fora do Git. Duas novas tentativas são permitidas no CI; resultados flaky precisam de investigação.
 
 Cada cenário recebe um contexto isolado, sem dependência de ordem ou sessão global. Seletores usam `data-test`, com configuração explícita de `getByTestId`. Ações usam as esperas nativas do Playwright.
 

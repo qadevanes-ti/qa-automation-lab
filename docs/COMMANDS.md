@@ -2,26 +2,31 @@
 
 Execute na pasta que contém package.json. Use Node 22 ou superior.
 
-| Objetivo | Comando |
-| --- | --- |
-| Instalar versões do lockfile | `npm ci` |
-| Instalar navegadores | `npx playwright install` |
-| Instalar dependências Linux | `npx playwright install --with-deps` |
-| Verificar tipos | `npm run typecheck` |
-| Validar alteração local | `npm run check` |
-| Regressão nos três motores | `npm run test:regression` |
-| Smoke no Chromium | `npm run test:smoke` |
-| Login | `npm run test:login` |
-| Catálogo | `npm run test:catalog` |
-| Carrinho | `npm run test:cart` |
-| Checkout | `npm run test:checkout` |
-| Navegador visível | `npm run test:headed` |
-| Compra visível com ações lentas | `npm run test:demo` |
-| Painel de testes e snapshots | `npm run test:ui` |
-| Inspector passo a passo | `npm run test:debug` |
-| Relatório da última execução | `npm run report` |
-| Listar casos | `npm run test:list` |
-| Gerar manual PDF | `npm run docs:pdf` |
+| Objetivo                                      | Comando                              |
+| --------------------------------------------- | ------------------------------------ |
+| Instalar versões do lockfile                  | `npm ci`                             |
+| Instalar navegadores                          | `npx playwright install`             |
+| Instalar dependências Linux                   | `npx playwright install --with-deps` |
+| Verificar lint                                | `npm run lint`                       |
+| Corrigir lint automaticamente quando possível | `npm run lint:fix`                   |
+| Formatar arquivos                             | `npm run format`                     |
+| Verificar formatação                          | `npm run format:check`               |
+| Lint, formatação e tipos                      | `npm run quality`                    |
+| Verificar tipos                               | `npm run typecheck`                  |
+| Validar alteração local                       | `npm run check`                      |
+| Regressão nos três motores                    | `npm run test:regression`            |
+| Smoke no Chromium                             | `npm run test:smoke`                 |
+| Login                                         | `npm run test:login`                 |
+| Catálogo                                      | `npm run test:catalog`               |
+| Carrinho                                      | `npm run test:cart`                  |
+| Checkout                                      | `npm run test:checkout`              |
+| Navegador visível                             | `npm run test:headed`                |
+| Compra visível com ações lentas               | `npm run test:demo`                  |
+| Painel de testes e snapshots                  | `npm run test:ui`                    |
+| Inspector passo a passo                       | `npm run test:debug`                 |
+| Relatório da última execução                  | `npm run report`                     |
+| Listar casos                                  | `npm run test:list`                  |
+| Gerar manual PDF                              | `npm run docs:pdf`                   |
 
 ## Filtros e investigação
 
@@ -39,8 +44,12 @@ O relatório é substituído pela execução seguinte. Evidências de falha fica
 ## Rotina sugerida
 
 1. Execute o cenário alterado com --grep.
-2. Execute npm run check para verificar tipos e a suíte Chromium.
+2. Execute npm run check para verificar lint, formatação, tipos e a suíte Chromium.
 3. Execute npm run test:regression para validar os três navegadores.
 4. Revise o relatório e o diff antes de publicar.
 
 Falha deve ser investigada; novas tentativas não substituem a correção de testes instáveis.
+
+## Atualizar a animação do README
+
+Instale as dependências de `scripts/requirements-demo.txt` no Python ativo e execute `npm run docs:demo`. O comando acessa o SauceDemo, captura telas reais e gera o GIF. As ferramentas de geração da documentação não são necessárias para executar os testes.

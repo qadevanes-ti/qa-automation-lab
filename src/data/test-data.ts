@@ -6,7 +6,9 @@ export const users = {
 } as const;
 
 export const customer = {
-  firstName: 'Pessoa', lastName: 'Teste', postalCode: '01001000',
+  firstName: 'Pessoa',
+  lastName: 'Teste',
+  postalCode: '01001000',
 } as const;
 
 export const backpack = { name: 'Sauce Labs Backpack', price: '$29.99' } as const;
