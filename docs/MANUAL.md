@@ -2,7 +2,7 @@
 
 ## Manual de arquitetura e aprendizado
 
-Playwright + TypeScript | Automação Web com SauceDemo | Edição 28/10/2026
+Playwright + TypeScript | Automação Web com SauceDemo | Edição 29/10/2026
 
 Este manual acompanha o código do portfólio. A proposta é entender o caminho completo de um cenário, desde a regra de negócio até o navegador. Leia com o projeto aberto e execute um caso por vez.
 
@@ -10,7 +10,7 @@ Este manual acompanha o código do portfólio. A proposta é entender o caminho 
 
 A suíte controla um navegador real para validar uma loja de demonstração: entrar, ordenar produtos, adicionar e remover itens, informar dados fictícios e finalizar uma compra simulada. Um teste positivo verifica um fluxo permitido. Um teste negativo verifica como o sistema rejeita uma entrada inválida.
 
-São 21 cenários: seis de autenticação, quatro de catálogo, quatro de carrinho e sete de checkout. A configuração permite executar cada um em Chromium, Firefox e WebKit. Três cenários recebem a tag @smoke para uma verificação curta dos fluxos essenciais.
+São 30 cenários: seis de autenticação, cinco de proteção de rotas, quatro de catálogo, quatro de detalhes, quatro de carrinho e sete de checkout. Os três motores desktop executam todos os cenários, e quatro cenários @smoke também executam no projeto mobile-chromium. São 94 execuções para 30 comportamentos distintos.
 
 ## 2. Arquitetura e responsabilidades
 
@@ -59,11 +59,11 @@ A expressão regular exige o caminho inventory.html no fim da URL. O ponto escap
 
 ## 5. Camada de testes: o que validar
 
-Abra tests/login.spec.ts. AUTH-01 é a evolução do seu teste inicial: o comportamento continua sendo entrar com usuário válido e visualizar o catálogo. Os detalhes de preenchimento e clique foram movidos para LoginPage. As expectativas continuam no cenário, tornando claro o que significa passar.
+Abra tests/login.spec.ts. AUTH-01 demonstra um fluxo de autenticação: o comportamento continua sendo entrar com usuário válido e visualizar o catálogo. Os detalhes de preenchimento e clique foram movidos para LoginPage. As expectativas continuam no cenário, tornando claro o que significa passar.
 
 Os casos negativos percorrem uma lista de objetos. Cada objeto informa identificador, título, usuário e mensagem esperada. O laço registra um teste independente por entrada; uma falha não impede os outros casos de serem registrados.
 
-Os testes de checkout usam beforeEach para colocar um produto no carrinho antes de cada caso. Não dependem do teste anterior. O caso CHK-01 valida produto e valores antes de finalizar, e depois verifica a mensagem de conclusão.
+Os testes de checkout solicitam a fixture checkoutStarted para selecionar os produtos e abrir o formulário. A opção checkoutCart define os produtos: por padrão uma mochila; em CHK-07, dois itens. Cada cenário prepara seu próprio estado. O caso CHK-01 valida produto e valores antes de finalizar, e depois verifica a mensagem de conclusão.
 
 ## 6. Pages: como interagir com a tela
 
@@ -88,7 +88,7 @@ getByTestId utiliza data-test porque playwright.config.ts configura testIdAttrib
 
 LoginPage concentra entrada e erro. InventoryPage concentra produtos, ordenação, acesso ao carrinho e logout. CartPage concentra itens e remoção. CheckoutPage concentra formulário, revisão e confirmação.
 
-O método item encontra o cartão pelo nome do produto e restringe o botão àquele cartão. Isso evita selecionar o primeiro botão da página sem saber a qual produto pertence. Os nomes usados são controlados pela massa atual; se aceitar texto arbitrário no futuro, prefira correspondência exata sem montar expressões regulares com entrada externa.
+O método item encontra o cartão pelo nome do produto e restringe o botão àquele cartão. Isso evita selecionar o primeiro botão da página sem saber a qual produto pertence. A implementação usa texto literal exato para aceitar também nomes com parênteses, como no cenário PROD-04. ProductPage restringe os campos ao contêiner de detalhes para evitar confusão com os elementos do catálogo durante a navegação.
 
 ## 7. Fixtures: preparação e isolamento
 
@@ -114,11 +114,11 @@ O produto escolhido tem nome e preço conhecidos. A revisão do checkout também
 
 playwright.config.ts define testDir, paralelismo, navegadores e evidências. fullyParallel permite que testes independentes executem em paralelo. workers limita quantos processos executam casos simultaneamente: três localmente e dois no CI.
 
-forbidOnly impede publicar uma execução de CI incompleta por causa de test.only esquecido. retries vale zero localmente e dois no CI. Uma aprovação apenas na repetição indica instabilidade e exige investigação.
+forbidOnly impede publicar uma execução de CI incompleta por causa de test.only esquecido. retries vale zero localmente e dois no CI. Uma aprovação apenas na repetição indica instabilidade: failOnFlakyTests reprova o CI mesmo que um retry passe.
 
 O timeout geral é de 30 segundos por teste e o de expect é de oito segundos. baseURL define a origem usada por page.goto('/'). BASE_URL pode sobrescrever o endereço via variável de ambiente. O projeto não carrega .env automaticamente.
 
-Os projetos chromium, firefox e webkit representam os motores de navegador. Essa configuração não é uma suíte mobile nativa nem comprova execução em um aparelho físico.
+Os projetos chromium, firefox e webkit representam os motores desktop. mobile-chromium usa o perfil Pixel 7 e filtra somente @smoke. Emula viewport, user agent e toque; não executa um aplicativo nativo nem comprova funcionamento em aparelho físico. No mobile, o botão dos detalhes pode exigir rolagem antes de aparecer na viewport; o teste faz essa rolagem e confirma que é alcançável.
 
 ## 10. Comandos para estudar
 
@@ -161,7 +161,7 @@ Se precisar de uma ação nova de negócio, crie um método na página correspon
 
 ### Comandos para uma rotina profissional
 
-npm run check verifica lint, formatação e tipos e executa Chromium. npm run quality executa somente as verificações estáticas. npm run format aplica a formatação definida pelo Prettier. O ESLint também detecta promises esquecidas sem await. npm run test:regression executa os três navegadores. Os scripts test:login, test:catalog, test:cart e test:checkout permitem trabalhar por domínio. O guia docs/COMMANDS.md reúne exemplos de filtros e investigação.
+npm run check verifica lint, formatação e tipos e executa Chromium. npm run quality executa somente as verificações estáticas. npm run format aplica a formatação definida pelo Prettier. O ESLint também detecta promises esquecidas sem await. npm run test:regression executa os três navegadores desktop e o smoke mobile Web. Os scripts test:login, test:catalog, test:cart e test:checkout permitem trabalhar por domínio. O guia docs/COMMANDS.md reúne exemplos de filtros e investigação.
 
 Para ver o site sendo controlado ao vivo, execute npm run test:demo. Esse comando abre Chromium e insere 1,2 segundo entre ações na compra CHK-01. A janela fecha ao terminar. npm run test:headed abre o navegador em velocidade normal. npm run test:ui mostra o painel e snapshots das ações selecionadas. npm run test:debug permite avançar manualmente no Inspector.
 
@@ -181,7 +181,7 @@ Se reportlab já estiver instalado no python3 ativo, npm run docs:pdf é suficie
 
 E2E: teste de ponta a ponta, pela interface. Assertiva: comparação entre resultado observado e esperado. Fixture: recurso e preparação entregues ao teste. Page Object: classe que representa ações de uma tela. Locator: descrição de um elemento. CI: execução automatizada após alterações. Smoke: seleção curta de fluxos essenciais. Flaky: teste cujo resultado oscila nas mesmas condições esperadas.
 
-Os cenários de múltiplos produtos, cancelamento, persistência e ordenação inversa estão implementados nesta edição. Como próximos passos, estude detalhes de produto, acessibilidade e API em uma aplicação que ofereça contrato documentado.
+Os cenários de múltiplos produtos, cancelamento, persistência e ordenação inversa estão implementados nesta edição. Também estão cobertos detalhes de produto, proteção de rotas e smoke mobile Web. Como próximos passos, estude acessibilidade e API em uma aplicação que ofereça contrato documentado.
 
 ## 16. Referências públicas
 
@@ -190,3 +190,11 @@ Os cenários de múltiplos produtos, cancelamento, persistência e ordenação i
 - Configuração: https://playwright.dev/docs/test-configuration
 - Relatórios e trace: https://playwright.dev/docs/trace-viewer
 - Aplicação de demonstração: https://www.saucedemo.com
+
+## 17. Decisões, riscos e diagnóstico
+
+O plano docs/TEST-PLAN.md relaciona riscos aos cenários que os cobrem. Leia docs/ARCHITECTURE.md para entender por que o checkout usa uma fixture parametrizável, por que o mobile executa somente smoke e por que o CI reprova instabilidade.
+
+O arquivo docs/CASE-STUDY.md documenta um defeito real da automação: nomes com parênteses eram tratados como expressão regular. A correção usa correspondência literal e a regressão PROD-04 protege o comportamento. A reprodução mínima do erro de JavaScript está separada da execução real do teste.
+
+Para estudar diagnóstico, use docs/TROUBLESHOOTING.md. As decisões de arquitetura e o estudo de caso mostram como relacionar riscos, código e evidências de execução.

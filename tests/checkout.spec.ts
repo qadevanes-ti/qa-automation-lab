@@ -2,16 +2,10 @@ import { test, expect } from '../src/fixtures/test.fixture';
 import { backpack, bikeLight, customer } from '../src/data/test-data';
 
 test.describe('Checkout', () => {
-  test.beforeEach(async ({ authenticatedInventory: inventory, cart }) => {
-    await inventory.addProduct(backpack.name);
-    await inventory.openCart();
-    await cart.checkout();
-  });
-
   test(
     'CHK-01 | Conclui uma compra com valores corretos',
     { tag: '@smoke' },
-    async ({ checkout, page }) => {
+    async ({ checkoutStarted: checkout, page }) => {
       await test.step('Quando preencho os dados de entrega', async () => {
         await checkout.fillCustomer(customer);
         await checkout.continue();
@@ -36,7 +30,7 @@ test.describe('Checkout', () => {
     { id: 'CHK-03', key: 'lastName', message: 'Error: Last Name is required' },
     { id: 'CHK-04', key: 'postalCode', message: 'Error: Postal Code is required' },
   ] as const) {
-    test(`${field.id} | Exige ${field.key}`, async ({ checkout, page }) => {
+    test(`${field.id} | Exige ${field.key}`, async ({ checkoutStarted: checkout, page }) => {
       await checkout.fillCustomer({ ...customer, [field.key]: '' });
       await checkout.continue();
       await expect(checkout.error).toHaveText(field.message);
@@ -44,7 +38,11 @@ test.describe('Checkout', () => {
     });
   }
 
-  test('CHK-05 | Cancela preenchimento e preserva o carrinho', async ({ checkout, cart, page }) => {
+  test('CHK-05 | Cancela preenchimento e preserva o carrinho', async ({
+    checkoutStarted: checkout,
+    cart,
+    page,
+  }) => {
     await checkout.fillCustomer(customer);
     await checkout.cancel();
     await expect(page).toHaveURL(/\/cart\.html$/);
@@ -53,7 +51,7 @@ test.describe('Checkout', () => {
   });
 
   test('CHK-06 | Cancela revisão sem perder o produto', async ({
-    checkout,
+    checkoutStarted: checkout,
     inventory,
     cart,
     page,
@@ -68,25 +66,22 @@ test.describe('Checkout', () => {
     await expect(cart.names).toHaveText([backpack.name]);
   });
 
-  test('CHK-07 | Conclui compra de dois produtos com soma correta', async ({
-    checkout,
-    inventory,
-    cart,
-    page,
-  }) => {
-    await checkout.cancel();
-    await page.goto('/inventory.html');
-    await inventory.addProduct(bikeLight.name);
-    await inventory.openCart();
-    await cart.checkout();
-    await checkout.fillCustomer(customer);
-    await checkout.continue();
-    await expect(checkout.itemNames).toHaveText([backpack.name, bikeLight.name]);
-    await expect(checkout.subtotal).toHaveText('Item total: $39.98');
-    await expect(checkout.tax).toHaveText('Tax: $3.20');
-    await expect(checkout.total).toHaveText('Total: $43.18');
-    await checkout.finish();
-    await expect(checkout.confirmation).toHaveText('Thank you for your order!');
-    await expect(inventory.badge).toHaveCount(0);
+  test.describe('Compra de múltiplos produtos', () => {
+    test.use({ checkoutCart: { products: [backpack, bikeLight] } });
+
+    test('CHK-07 | Conclui compra de dois produtos com soma correta', async ({
+      checkoutStarted: checkout,
+      inventory,
+    }) => {
+      await checkout.fillCustomer(customer);
+      await checkout.continue();
+      await expect(checkout.itemNames).toHaveText([backpack.name, bikeLight.name]);
+      await expect(checkout.subtotal).toHaveText('Item total: $39.98');
+      await expect(checkout.tax).toHaveText('Tax: $3.20');
+      await expect(checkout.total).toHaveText('Total: $43.18');
+      await checkout.finish();
+      await expect(checkout.confirmation).toHaveText('Thank you for your order!');
+      await expect(inventory.badge).toHaveCount(0);
+    });
   });
 });

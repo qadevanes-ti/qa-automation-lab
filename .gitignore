@@ -12,3 +12,6 @@ node_modules/
 .DS_Store
 __pycache__/
 .venv/
+
+# Anotações pessoais de estudo (não publicar)
+.local-notes/

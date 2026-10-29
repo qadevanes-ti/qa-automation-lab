@@ -15,11 +15,11 @@ export class InventoryPage {
   readonly badge: Locator;
 
   item(name: string) {
-    return this.items.filter({
-      has: this.page
-        .getByTestId('inventory-item-name')
-        .filter({ hasText: new RegExp(`^${name}$`) }),
-    });
+    return this.items.filter({ has: this.page.getByText(name, { exact: true }) });
+  }
+
+  async openProduct(name: string) {
+    await this.item(name).getByText(name, { exact: true }).click();
   }
 
   async addProduct(name: string) {

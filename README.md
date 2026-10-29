@@ -33,7 +33,7 @@ Validar a jornada de compra de um e-commerce com uma suíte E2E organizada por d
 
 ## Resultado de validação
 
-Execução local em **28/10/2026**: **63 testes aprovados**, correspondentes a 21 cenários em Chromium, Firefox e WebKit. A checagem estática de tipos também foi aprovada. Esse resultado registra a validação local; a pipeline deve ser acompanhada na aba Actions após a publicação.
+A suíte possui **30 cenários de negócio**: 90 execuções desktop (Chromium, Firefox e WebKit) e quatro fluxos smoke em emulação mobile Web, totalizando **94 execuções**. Consulte a aba Actions para o resultado da versão publicada; o [registro de validação](docs/VALIDATION.md) descreve a execução local desta evolução.
 
 ## Demonstração
 
@@ -82,22 +82,31 @@ playwright.config.ts  Navegadores, relatórios, tentativas e evidências
 
 ## Cobertura
 
-| Domínio  | Cenários | Principais verificações                                               |
-| -------- | -------: | --------------------------------------------------------------------- |
-| Login    |        6 | Sucesso, inválido, bloqueado, obrigatoriedade, logout                 |
-| Catálogo |        4 | Nome e preço em ambas as direções                                     |
-| Carrinho |        4 | Adição, identidade, preço e remoção                                   |
-| Checkout |        7 | Compra simples e múltipla, totais, cancelamento e campos obrigatórios |
+| Domínio             | Cenários | Risco principal                                   |
+| ------------------- | -------: | ------------------------------------------------- |
+| Login               |        6 | Entrada indevida ou sessão não encerrada          |
+| Proteção de rotas   |        5 | Telas de compra acessíveis sem sessão             |
+| Catálogo            |        4 | Ordenação incompatível com a escolha do comprador |
+| Detalhes de produto |        4 | Divergência de produto e estado entre telas       |
+| Carrinho            |        4 | Perda de itens ou remoção incorreta               |
+| Checkout            |        7 | Valores incorretos ou compra interrompida         |
 
-São 21 cenários, configurados em três navegadores (63 execuções). A seleção `@smoke` cobre login, adição ao carrinho e compra completa.
+O projeto `mobile-chromium` executa quatro testes `@smoke` com o perfil Pixel 7: login, adição pelo catálogo, adição pelos detalhes e compra completa. É emulação de navegador móvel; não substitui um aparelho físico ou uma auditoria de responsividade.
+
+## Estratégia e decisões
+
+- [Estratégia por riscos e plano de testes](docs/TEST-PLAN.md): prioridades, cobertura, limites e critérios de saída.
+- [Decisões de arquitetura](docs/ARCHITECTURE.md): alternativas, justificativas e custos de manutenção.
+- [Estudo de caso real de manutenção](docs/CASE-STUDY.md): investigação de um seletor incompatível com nomes que contêm parênteses.
+- [Guia de diagnóstico](docs/TROUBLESHOOTING.md): distinguir defeitos da aplicação, automação e ambiente.
 
 ## Comandos
 
 | Comando                 | Finalidade                                          |
 | ----------------------- | --------------------------------------------------- |
-| `npm test`              | Executar Chromium, Firefox e WebKit                 |
-| `npm run test:chromium` | Executar os 21 cenários no Chromium                 |
-| `npm run test:smoke`    | Executar três cenários essenciais                   |
+| `npm test`              | Regressão desktop e smoke mobile Web                |
+| `npm run test:chromium` | Executar os 30 cenários no Chromium                 |
+| `npm run test:smoke`    | Executar quatro cenários essenciais                 |
 | `npm run test:demo`     | Ver a compra ao vivo no navegador, com ações lentas |
 | `npm run test:ui`       | Explorar testes na interface do Playwright          |
 | `npm run test:debug`    | Depurar com Inspector                               |
@@ -125,7 +134,7 @@ npm run test:catalog
 npm run test:cart
 npm run test:checkout
 
-# Regressão completa nos três navegadores
+# Regressão desktop e smoke mobile Web
 npm run test:regression
 
 # Ver o navegador durante os testes
@@ -142,7 +151,7 @@ Consulte o [guia de comandos](docs/COMMANDS.md) para instalação, filtros, depu
 
 ## Qualidade e CI
 
-A pipeline instala dependências pelo lockfile, verifica lint, formatação e tipos e executa os três navegadores em Node 22. Guarda HTML, JUnit e evidências por 14 dias. Localmente, falhas retêm screenshot, vídeo e trace; esses arquivos ficam fora do Git. Duas novas tentativas são permitidas no CI; resultados flaky precisam de investigação.
+A pipeline instala dependências pelo lockfile, verifica lint, formatação e tipos e executa os três navegadores em Node 22. Guarda HTML, JUnit e evidências por 14 dias. Localmente, falhas retêm screenshot, vídeo e trace; esses arquivos ficam fora do Git. Duas novas tentativas são permitidas no CI para produzir evidências, mas `failOnFlakyTests` mantém a pipeline vermelha se um teste passar apenas na repetição.
 
 Cada cenário recebe um contexto isolado, sem dependência de ordem ou sessão global. Seletores usam `data-test`, com configuração explícita de `getByTestId`. Ações usam as esperas nativas do Playwright.
 
@@ -154,7 +163,7 @@ O SauceDemo é externo e pode mudar ou ficar indisponível. A suíte cobre fluxo
 
 ## Evolução sugerida
 
-Estudar testes de API em uma aplicação com contrato documentado, verificações de acessibilidade e detalhes de produto. Persistência, múltiplos produtos e cancelamento do checkout já estão cobertos.
+Próximos incrementos: acessibilidade automatizada e detalhes de produto com imagem, além de testes de API em uma aplicação com contrato documentado. Proteção de rotas, comparação de produto entre telas e smoke mobile Web já estão implementados.
 
 ## Referências
 

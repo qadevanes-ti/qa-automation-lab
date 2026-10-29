@@ -25,7 +25,11 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "quality": "npm run lint && npm run format:check && npm run typecheck",
-    "docs:demo": "node scripts/record-demo.cjs"
+    "docs:demo": "node scripts/record-demo.cjs",
+    "test:mobile": "playwright test --project=mobile-chromium",
+    "test:access": "playwright test tests/access.spec.ts --project=chromium",
+    "test:product": "playwright test tests/product.spec.ts --project=chromium",
+    "test:stability": "playwright test --project=chromium --grep @smoke --repeat-each=5"
   },
   "keywords": [],
   "author": "Adevanes (https://github.com/qadevanes-ti)",

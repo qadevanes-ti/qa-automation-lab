@@ -28,7 +28,7 @@ def footer(canvas, doc):
     canvas.restoreState()
 
 def generate():
-    story = [Spacer(1, 3*cm), Paragraph('QA AUTOMATION<br/>LAB', ParagraphStyle('Cover', fontName='Helvetica-Bold', fontSize=38, leading=44, textColor=colors.HexColor('#0f172a'))), Spacer(1, cm), Paragraph('Manual de arquitetura e aprendizado', styles['Heading1']), Paragraph('Playwright + TypeScript<br/>Da regra de negócio à execução no navegador', styles['BodyManual']), Spacer(1, 2*cm), Paragraph('PORTFÓLIO QA / 28 OUT 2026', styles['BodyManual']), PageBreak()]
+    story = [Spacer(1, 3*cm), Paragraph('QA AUTOMATION<br/>LAB', ParagraphStyle('Cover', fontName='Helvetica-Bold', fontSize=38, leading=44, textColor=colors.HexColor('#0f172a'))), Spacer(1, cm), Paragraph('Manual de arquitetura e aprendizado', styles['Heading1']), Paragraph('Playwright + TypeScript<br/>Da regra de negócio à execução no navegador', styles['BodyManual']), Spacer(1, 2*cm), Paragraph('PORTFÓLIO QA / 29 OUT 2026', styles['BodyManual']), PageBreak()]
     paragraph, code = [], []
     in_code = False
     def flush():
